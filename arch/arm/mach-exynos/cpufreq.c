@@ -803,15 +803,13 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	retval = cpufreq_frequency_table_cpuinfo(policy, exynos_info->freq_table);
 
 	/* Keep stock frq. as default startup frq. */
-<<<<<<< HEAD
+
 #if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_M3)
 	policy->max = 1400000;
 #else
 	policy->max = 1600000; // (CONFIG_MACH_T0)
 #endif
-=======
-	policy->max = 1600000;
->>>>>>> 093d008... Implemented CPU OC & UV support (1.8 GHz)
+
 	policy->min = 200000;
 
 	return retval;
@@ -1024,7 +1022,6 @@ ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 
 	return count;
 }
-<<<<<<< HEAD
 
 /* sysfs interface for ASV level */
 ssize_t show_asv_level(struct cpufreq_policy *policy, char *buf) {
@@ -1039,5 +1036,4 @@ extern ssize_t store_asv_level(struct cpufreq_policy *policy,
 	// the store function does not do anything
 	return count;
 }
-=======
->>>>>>> 093d008... Implemented CPU OC & UV support (1.8 GHz)
+
