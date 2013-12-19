@@ -24,6 +24,8 @@
 
 #include <plat/clock.h>
 
+/*#define CPUFREQ_LEVEL_END	L6*/
+
 #if defined(CONFIG_EXYNOS4210_1200MHZ_SUPPORT)
 #define CPUFREQ_LEVEL_END	L14
 #else
