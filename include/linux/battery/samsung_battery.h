@@ -433,9 +433,7 @@ struct samsung_battery_platform_data {
 	unsigned int in_curr_limit;
 	unsigned int chg_curr_ta;
 	unsigned int chg_curr_usb;
-	unsigned int in_curr_usb;
 	unsigned int chg_curr_cdp;
-	unsigned int in_curr_cdp;
 	unsigned int chg_curr_wpc;
 	unsigned int chg_curr_dock;
 	unsigned int chg_curr_etc;
@@ -508,6 +506,7 @@ struct samsung_battery_platform_data {
 	bool battery_standever;
 };
 
+<<<<<<< HEAD
 
 extern bool is_cable_attached;
 
@@ -524,4 +523,6 @@ enum {
 };
 #endif
 
+=======
+>>>>>>> 9a0aea0... Revert "battery: Add MAX77693/Midas charger control"
 #endif /* __MACH_SAMSUNG_BATTERY_H */
