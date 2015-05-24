@@ -254,7 +254,11 @@ core-$(CONFIG_VFP)		+= arch/arm/vfp/
 core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
 core-y				+= $(machdirs) $(platdirs)
 <<<<<<< HEAD
+<<<<<<< HEAD
 core-y				+= arch/arm/crypto/
+=======
+core-$(CONFIG_INTELLI_PLUG)	+= arch/arm/hotplug/
+>>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 =======
 core-$(CONFIG_INTELLI_PLUG)	+= arch/arm/hotplug/
 >>>>>>> 2391dc6... Implemented intelli_plug (arter97)

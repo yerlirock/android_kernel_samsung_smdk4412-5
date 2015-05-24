@@ -1874,7 +1874,10 @@ static const struct sched_class rt_sched_class;
 static void inc_nr_running(struct rq *rq)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 #ifdef CONFIG_INTELLI_PLUG
 	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
 #endif
@@ -1884,6 +1887,9 @@ static void inc_nr_running(struct rq *rq)
 	nr_stats->ave_nr_running = do_avg_nr_running(rq);
 	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
+<<<<<<< HEAD
+>>>>>>> 2391dc6... Implemented intelli_plug (arter97)
+=======
 >>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 	rq->nr_running++;
 #ifdef CONFIG_INTELLI_PLUG
@@ -1894,7 +1900,10 @@ static void inc_nr_running(struct rq *rq)
 static void dec_nr_running(struct rq *rq)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 #ifdef CONFIG_INTELLI_PLUG
 	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
 #endif
@@ -1904,6 +1913,9 @@ static void dec_nr_running(struct rq *rq)
 	nr_stats->ave_nr_running = do_avg_nr_running(rq);
 	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
+<<<<<<< HEAD
+>>>>>>> 2391dc6... Implemented intelli_plug (arter97)
+=======
 >>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 	rq->nr_running--;
 #ifdef CONFIG_INTELLI_PLUG
