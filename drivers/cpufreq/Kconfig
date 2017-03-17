@@ -123,7 +123,34 @@ config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
 	bool "pegasusq"
 	select CPU_FREQ_GOV_PEGASUSQ
 
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ
+        bool "lulzactiveq"
+        select CPU_FREQ_GOV_LULZACTIVEQ
+        help
+          'lulzactiveq' - hotplug mechanism added in lulzactive
+
+config CPU_FREQ_DEFAULT_GOV_SMARTASS2
+	bool "smartass2"
+	select CPU_FREQ_GOV_SMARTASS2
+	help
+Use the CPUFreq governor 'smartassV2' as default.
+
+config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
+	bool "intelliactive"
+	select CPU_FREQ_GOV_INTELLIACTIVE
+	help
+	  Use the CPUFreq governor 'intelliactive' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+          'interactive' governor for latency-sensitive workloads.
+
 endchoice
+
+config CPU_FREQ_GOV_LULZACTIVEQ
+        tristate "'lulzactiveq' cpufreq governor"
+        depends on CPU_FREQ
+        help
+        'lulzactiveq' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_GOV_PERFORMANCE
 	tristate "'performance' governor"
@@ -270,6 +297,14 @@ config CPU_FREQ_GOV_PEGASUSQ_BOOST
 	bool "pegasusq - enable suport for userspace-controlled cpu boosts"
 	depends on CPU_FREQ_GOV_PEGASUSQ
 	default n
+	
+config CPU_FREQ_GOV_SMARTASS2
+	tristate "'smartassV2' cpufreq governor"
+	depends on CPU_FREQ
+	default y
+	help
+		'smartassV2' - a "smart" governor
+                If in doubt, say N.
 
 config CPU_FREQ_GOV_SLP
 	tristate "'slp' cpufreq policy governor"
@@ -288,7 +323,23 @@ config CPU_FREQ_DVFS_MONITOR
 	help
 	  This option adds a proc node for dvfs monitoring.
 	  /proc/dvfs_mon
+	  
+config CPU_FREQ_GOV_INTELLIACTIVE
+	tristate "'intelliactive' cpufreq policy governor"
+	help
+	  'intelliactive' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
 
+	  This governor attempts to reduce the latency of clock
+	  increases so that the system is more responsive to
+	  interactive workloads.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_interactive.
+
+	  For details, take a look at linux/Documentation/cpu-freq.
+
+          If in doubt, say N.
 
 menu "x86 CPU frequency scaling drivers"
 depends on X86
