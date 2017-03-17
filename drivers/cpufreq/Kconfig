@@ -146,11 +146,11 @@ config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
 
 endchoice
 
-config CPU_FREQ_GOV_LULZACTIVE
-        tristate "'lulzactive' cpufreq governor"
+config CPU_FREQ_GOV_LULZACTIVEQ
+        tristate "'lulzactiveq' cpufreq governor"
         depends on CPU_FREQ
         help
-        'lulzactive' - hotplug mechanism added in lulzactive
+        'lulzactiveq' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_GOV_PERFORMANCE
 	tristate "'performance' governor"
