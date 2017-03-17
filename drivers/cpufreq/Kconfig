@@ -123,11 +123,11 @@ config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
 	bool "pegasusq"
 	select CPU_FREQ_GOV_PEGASUSQ
 
-config CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ
-        bool "lulzactiveq"
-        select CPU_FREQ_GOV_LULZACTIVEQ
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVE
+        bool "lulzactive"
+        select CPU_FREQ_GOV_LULZACTIVE
         help
-          'lulzactiveq' - hotplug mechanism added in lulzactive
+          'lulzactive' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_DEFAULT_GOV_SMARTASS2
 	bool "smartass2"
@@ -146,11 +146,11 @@ config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
 
 endchoice
 
-config CPU_FREQ_GOV_LULZACTIVEQ
-        tristate "'lulzactiveq' cpufreq governor"
+config CPU_FREQ_GOV_LULZACTIVE
+        tristate "'lulzactive' cpufreq governor"
         depends on CPU_FREQ
         help
-        'lulzactiveq' - hotplug mechanism added in lulzactive
+        'lulzactive' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_GOV_PERFORMANCE
 	tristate "'performance' governor"
