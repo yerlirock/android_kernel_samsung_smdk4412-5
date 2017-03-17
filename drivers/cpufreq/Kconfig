@@ -123,11 +123,11 @@ config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
 	bool "pegasusq"
 	select CPU_FREQ_GOV_PEGASUSQ
 
-config CPU_FREQ_DEFAULT_GOV_LULZACTIVE
-        bool "lulzactive"
-        select CPU_FREQ_GOV_LULZACTIVE
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVEQ
+        bool "lulzactiveq"
+        select CPU_FREQ_GOV_LULZACTIVEQ
         help
-          'lulzactive' - hotplug mechanism added in lulzactive
+          'lulzactiveq' - hotplug mechanism added in lulzactive
 
 config CPU_FREQ_DEFAULT_GOV_SMARTASS2
 	bool "smartass2"
