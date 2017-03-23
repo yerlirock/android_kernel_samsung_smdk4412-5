@@ -253,15 +253,8 @@ core-$(CONFIG_VFP)		+= arch/arm/vfp/
 # If we have a machine-specific directory, then include it in the build.
 core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
 core-y				+= $(machdirs) $(platdirs)
-<<<<<<< HEAD
-<<<<<<< HEAD
 core-y				+= arch/arm/crypto/
-=======
 core-$(CONFIG_INTELLI_PLUG)	+= arch/arm/hotplug/
->>>>>>> 2391dc6... Implemented intelli_plug (arter97)
-=======
-core-$(CONFIG_INTELLI_PLUG)	+= arch/arm/hotplug/
->>>>>>> 2391dc6... Implemented intelli_plug (arter97)
 
 drivers-$(CONFIG_OPROFILE)      += arch/arm/oprofile/
 
