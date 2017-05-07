@@ -46,7 +46,7 @@ static struct regulator *arm_regulator;
 static struct cpufreq_freqs freqs;
 
 static bool exynos_cpufreq_disable;
-static bool exynos_cpufreq_lock_disable;
+bool exynos_cpufreq_lock_disable;
 static bool exynos_cpufreq_init_done;
 static DEFINE_MUTEX(set_freq_lock);
 static DEFINE_MUTEX(set_cpu_freq_lock);
@@ -215,7 +215,9 @@ int exynos_find_cpufreq_level_by_volt(unsigned int arm_volt,
 	/* find cpufreq level in volt_table */
 	for (i = exynos_info->min_support_idx;
 			i >= exynos_info->max_support_idx; i--) {
+		pr_info("exynos_find_cpufreq_level_by_volt: searching volt_table[%d](%d) >= %d", i, volt_table[i], arm_volt);
 		if (volt_table[i] >= arm_volt) {
+			pr_info("exynos_find_cpufreq_level_by_volt: found volt_table[%d](%d) >= %d", i, volt_table[i], arm_volt);
 			*level = (unsigned int)i;
 			return 0;
 		}
@@ -717,8 +719,6 @@ static struct notifier_block exynos_cpufreq_notifier = {
 	.notifier_call = exynos_cpufreq_notifier_event,
 };
 
-extern unsigned int intelli_plug_active;
-
 static int exynos_cpufreq_policy_notifier_call(struct notifier_block *this,
 				unsigned long code, void *data)
 {
@@ -726,36 +726,9 @@ static int exynos_cpufreq_policy_notifier_call(struct notifier_block *this,
 
 	switch (code) {
 	case CPUFREQ_ADJUST:
-		/*
-		 * arter97: add intelli_plug hook here;
-		 * if the selected governor has its own hotplugging implemented, disable intelli_plug,
-		 * if not, enable intelli_plug.
-		 */
-		if ((!strnicmp(policy->governor->name, "lulzactiveq",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "pegasusq",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "pegasusqplus",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "performance",	CPUFREQ_NAME_LEN)) /* add performance	governor as an exception */
-		 || (!strnicmp(policy->governor->name, "powersave",	CPUFREQ_NAME_LEN)) /* add powersave	governor as an exception */
-		 || (!strnicmp(policy->governor->name, "userspace",	CPUFREQ_NAME_LEN)) /* add userspace	governor as an exception */
-		 || (!strnicmp(policy->governor->name, "yankasusq",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "zzmoove",	CPUFREQ_NAME_LEN))
- 		 || (!strnicmp(policy->governor->name, "pegasusqpluso",	CPUFREQ_NAME_LEN))) {
-			if (intelli_plug_active) {
-				printk(KERN_DEBUG "disabling intelli_plug for governor: %s\n",
-								policy->governor->name);
-				intelli_plug_active = 0;
-			}
-		} else {
-			if (!intelli_plug_active) {
-				printk(KERN_DEBUG "enabling intelli_plug for governor: %s\n",
-								policy->governor->name);
-				intelli_plug_active = 1;
-			}
-		} /* intelli_plug */
-
-		if ((!strnicmp(policy->governor->name, "powersave",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "performance",	CPUFREQ_NAME_LEN))
-		 || (!strnicmp(policy->governor->name, "userspace",	CPUFREQ_NAME_LEN))) {
+		if ((!strnicmp(policy->governor->name, "powersave", CPUFREQ_NAME_LEN))
+		|| (!strnicmp(policy->governor->name, "performance", CPUFREQ_NAME_LEN))
+		|| (!strnicmp(policy->governor->name, "userspace", CPUFREQ_NAME_LEN))) {
 			printk(KERN_DEBUG "cpufreq governor is changed to %s\n",
 							policy->governor->name);
 			exynos_cpufreq_lock_disable = true;
@@ -803,13 +776,12 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	retval = cpufreq_frequency_table_cpuinfo(policy, exynos_info->freq_table);
 
 	/* Keep stock frq. as default startup frq. */
-
-#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_M3)
+#ifdef CONFIG_MACH_M0
 	policy->max = 1400000;
-#else
-	policy->max = 1600000; // (CONFIG_MACH_T0)
 #endif
-
+#ifdef CONFIG_MACH_T0
+	policy->max = 1600000;
+#endif
 	policy->min = 200000;
 
 	return retval;
@@ -965,7 +937,7 @@ ssize_t store_UV_uV_table(struct cpufreq_policy *policy,
 	if(tokens != CPUFREQ_LEVEL_END) {
 		top_offset = CPUFREQ_LEVEL_END - tokens;
 	}
-
+	
 	for (i = 0 + top_offset; i < CPUFREQ_LEVEL_END; i++) {
 		if (t[i] > CPU_UV_MV_MAX) 
 			t[i] = CPU_UV_MV_MAX;
@@ -977,7 +949,7 @@ ssize_t store_UV_uV_table(struct cpufreq_policy *policy,
 
 		exynos_info->volt_table[i+invalid_offset] = t[i];
 	}
-
+	
 	return count;
 }		
 
@@ -996,7 +968,7 @@ ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 	if(tokens != CPUFREQ_LEVEL_END) {
 		top_offset = CPUFREQ_LEVEL_END - tokens;
 	}
-
+	
 	for (i = 0 + top_offset; i < CPUFREQ_LEVEL_END; i++) {
 		int rest = 0;
 
@@ -1008,7 +980,7 @@ ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 			else
 				t[i] -= rest;
 		}
-
+		
 		if (t[i] > CPU_UV_MV_MAX) 
 			t[i] = CPU_UV_MV_MAX;
 		else if (t[i] < CPU_UV_MV_MIN) 
@@ -1016,24 +988,10 @@ ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 
 		while(exynos_info->freq_table[i+invalid_offset].frequency==CPUFREQ_ENTRY_INVALID)
 			++invalid_offset;
-
+		
 		exynos_info->volt_table[i+invalid_offset] = t[i];
 	}
-
-	return count;
-}
-
-/* sysfs interface for ASV level */
-ssize_t show_asv_level(struct cpufreq_policy *policy, char *buf) {
-
-	return sprintf(buf, "ASV level: %d\n",exynos_result_of_asv); 
-
-}
-
-extern ssize_t store_asv_level(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count) {
 	
-	// the store function does not do anything
 	return count;
 }
 
