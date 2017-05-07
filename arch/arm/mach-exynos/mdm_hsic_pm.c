@@ -137,7 +137,6 @@ struct mdm_hsic_pm_data {
 	struct delayed_work request_resume_work;
 	struct delayed_work fast_dormancy_work;
 	struct delayed_work rpm_state_check_work;
-	
 	struct mdm_hsic_pm_platform_data *mdm_pdata;
 
 	/* QMICM mode value */
