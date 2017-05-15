@@ -630,17 +630,15 @@ static void exynos4x12_set_frequency(unsigned int old_index,
 		if (exynos4x12_volt_table[new_index] >= 950000 &&
 				need_dynamic_ema)
 				__raw_writel(0x101, EXYNOS4_EMA_CONF);
-<<<<<<< HEAD
 
 		if ((soc_is_exynos4212())
 			&& (exynos_result_of_asv > 3)
 			&& (old_index > L14) && (new_index <= L14)) { /* 900MHz */
-=======
 #ifndef CONFIG_ABB_CONTROL
+			
 		if ((soc_is_exynos4212())
 			&& (exynos_result_of_asv > 3)
 			&& (old_index > L7) && (new_index <= L7)) {
->>>>>>> ce01356... Implemented Adaptive Body Bias (ABB)
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_130V);
 		} else if ((samsung_rev() >= EXYNOS4412_REV_2_0)
 			&& (exynos_result_of_asv > 2)
@@ -683,16 +681,15 @@ static void exynos4x12_set_frequency(unsigned int old_index,
 			/* 2. Change the system clock divider values */
 			set_clkdiv(new_index);
 		}
-<<<<<<< HEAD
+
 		if ((soc_is_exynos4212())
 			&& (exynos_result_of_asv > 3)
 			&& (old_index <= L14) && (new_index > L14)) { /* 900MHz */
-=======
+
 #ifndef CONFIG_ABB_CONTROL
 		if ((soc_is_exynos4212())
 			&& (exynos_result_of_asv > 3)
 			&& (old_index <= L7) && (new_index > L7)) {
->>>>>>> ce01356... Implemented Adaptive Body Bias (ABB)
 			exynos4x12_set_abb_member(ABB_ARM, ABB_MODE_100V);
 		} else if ((samsung_rev() >= EXYNOS4412_REV_2_0)
 			&& (exynos_result_of_asv > 2)
