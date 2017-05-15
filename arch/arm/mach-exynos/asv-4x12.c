@@ -310,8 +310,6 @@ int exynos4x12_asv_init(struct samsung_asv *asv_info)
 
 		exynos4x12_pre_set_abb();
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_VIDEO_MALI400MP		
 #ifdef CONFIG_GPU_CLOCK_CONTROL
 		mali_dvfs_table_update();
@@ -321,7 +319,6 @@ int exynos4x12_asv_init(struct samsung_asv *asv_info)
 		abb_control_init();
 #endif
 
->>>>>>> ce01356... Implemented Adaptive Body Bias (ABB)
 		return -EEXIST;
 	}
 
