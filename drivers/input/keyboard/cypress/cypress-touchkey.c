@@ -177,7 +177,12 @@ void update_touchkey_brightness(unsigned int level, bool set_voltage)
 {
 	if (level > 0 && level < 256) {
 		printk(KERN_DEBUG "[TouchKey-LED] %s: %d\n", __func__, level);
+<<<<<<< HEAD
 		touchkey_voltage_brightness = BL_MIN + ((((level * 100 / 255) * (BL_MAX - BL_MIN)) / 100) / 50) * 50;
+=======
+		touchkey_voltage_brightness = BL_MIN +
+			((((level * 100 / 255) * (BL_MAX - BL_MIN)) / 100) / 50) * 50;
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 		if (set_voltage) {
 			touchkey_voltage = touchkey_voltage_brightness;
 			change_touch_key_led_voltage(touchkey_voltage_brightness);
@@ -207,7 +212,12 @@ static ssize_t get_touchkey_fadein( struct device *dev, struct device_attribute 
 {
 	return sprintf(buf,"%d\n", led_fadein);
 }
+<<<<<<< HEAD
 static ssize_t set_touchkey_fadein( struct device *dev, struct device_attribute *attr, const char *buf, size_t size )
+=======
+static ssize_t set_touchkey_fadein( struct device *dev, struct device_attribute *attr,
+				    const char *buf, size_t size )
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 {
 	if (!strncmp(buf, "on", 2)) led_fadein = 1;
 	else if (!strncmp(buf, "off", 3)) led_fadein = 0;
@@ -215,11 +225,21 @@ static ssize_t set_touchkey_fadein( struct device *dev, struct device_attribute 
 	return size;
 }
 
+<<<<<<< HEAD
 static ssize_t get_touchkey_fadeout( struct device *dev, struct device_attribute *attr, char *buf )
 {
 	return sprintf(buf,"%d\n", led_fadeout);
 }
 static ssize_t set_touchkey_fadeout( struct device *dev, struct device_attribute *attr, const char *buf, size_t size )
+=======
+static ssize_t get_touchkey_fadeout( struct device *dev, struct device_attribute *attr,
+				     char *buf )
+{
+	return sprintf(buf,"%d\n", led_fadeout);
+}
+static ssize_t set_touchkey_fadeout( struct device *dev, struct device_attribute *attr,
+				     const char *buf, size_t size )
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 {
 	if (!strncmp(buf, "on", 2)) led_fadeout = 1;
 	else if (!strncmp(buf, "off", 3)) led_fadeout = 0;
@@ -238,6 +258,10 @@ static void led_fadeout_process(struct work_struct *work)
 		printk(KERN_DEBUG "[TouchKey] %s: Ignoring, already doing fade out\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
+=======
+	printk(KERN_DEBUG "[TouchKey] %s: Fade started\n", __func__);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 
 	if (!led_fadein) {
 		touchkey_voltage = touchkey_voltage_brightness;
@@ -247,6 +271,12 @@ static void led_fadeout_process(struct work_struct *work)
 	while (touchkey_voltage >= BL_MIN) {
 		change_touch_key_led_voltage(touchkey_voltage);
 		if (led_abort_fade) {
+<<<<<<< HEAD
+=======
+			printk(KERN_DEBUG "[TouchKey] %s: Fade aborted\n",
+				 __func__);
+
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 			led_abort_fade = 0;
 			break;
 		}
@@ -259,6 +289,10 @@ static void led_fadeout_process(struct work_struct *work)
 		touchkey_led_status = TK_CMD_LED_OFF;
 		i2c_touchkey_write(bl_tkey_i2c->client, (u8 *) &touchkey_led_status, 1);
 	}
+<<<<<<< HEAD
+=======
+	printk(KERN_DEBUG "[TouchKey] %s: Fade finished\n", __func__);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 	mutex_unlock(&led_fadeout_mutex);
 }
 
@@ -273,9 +307,17 @@ static void led_fadein_process(struct work_struct *work)
 		printk(KERN_DEBUG "[TouchKey] %s: Ignoring, already doing fade in\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 
 	if (!touchled_cmd_reversed && touchkey_led_status == TK_CMD_LED_ON) {
 		printk(KERN_DEBUG "[TouchKey] Update LED voltage only, because LED is already on\n");
+=======
+	printk(KERN_DEBUG "[TouchKey] %s: Fade started\n", __func__);
+
+	if (!touchled_cmd_reversed && touchkey_led_status == TK_CMD_LED_ON) {
+		printk(KERN_DEBUG
+			"[TouchKey] Update LED voltage only, because LED is already on\n");
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 		change_touch_key_led_voltage(touchkey_voltage_brightness);
 		mutex_unlock(&led_fadein_mutex);
 		return;
@@ -302,12 +344,21 @@ static void led_fadein_process(struct work_struct *work)
 	while (touchkey_voltage <= touchkey_voltage_brightness) {
 		change_touch_key_led_voltage(touchkey_voltage);
 		if (led_abort_fade) {
+<<<<<<< HEAD
+=======
+			printk(KERN_DEBUG "[TouchKey] %s: Fade aborted\n",
+				 __func__);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 			led_abort_fade = 0;
 			break;
 		}
 		msleep(FADEIN_STEP_MS);
 		touchkey_voltage += 50;
 	}
+<<<<<<< HEAD
+=======
+	printk(KERN_DEBUG "[TouchKey] %s: Fade finished\n", __func__);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 
 	mutex_unlock(&led_fadein_mutex);
 }
@@ -894,6 +945,7 @@ static irqreturn_t touchkey_interrupt(int irq, void *dev_id)
 
 	if (led_on_keypress) {
 #ifdef LED_LDO_WITH_REGULATOR
+<<<<<<< HEAD
 		if (led_fadein) {
 			/* Break-off running fade-out process */
 			led_abort_fade = 1;
@@ -901,6 +953,23 @@ static irqreturn_t touchkey_interrupt(int irq, void *dev_id)
 			led_abort_fade = 0;
 			schedule_work(&led_fadein_work);
 			return IRQ_HANDLED;
+=======
+		if (pressed) {
+			if (led_fadein) {
+				printk(KERN_DEBUG "[TouchKey] %s: Trigger fadein\n",
+					 __func__);
+
+				/* Break-off running fade-out process */
+				led_abort_fade = 1;
+				cancel_work_sync(&led_fadeout_work);
+				led_abort_fade = 0;
+				schedule_work(&led_fadein_work);
+				return IRQ_HANDLED;
+			}
+			/* Restore voltage when fade-in is not enabled */
+			touchkey_voltage = touchkey_voltage_brightness;
+			change_touch_key_led_voltage(touchkey_voltage_brightness);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 		}
 #endif
 		printk(KERN_DEBUG "[TouchKey] pressed: Turn LED on\n");
@@ -1048,7 +1117,11 @@ static int sec_touchkey_early_suspend(struct early_suspend *h)
 	input_sync(tkey_i2c->input_dev);
 
 	if (led_fadeout) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "[TouchKey] Wait for fadeout-process to finish\n");
+=======
+		led_fadeout_process(NULL);
+>>>>>>> 23ad6e5... cypress: Add optional fade-in/out effect
 		cancel_work_sync(&led_fadeout_work);
 	}
 	touchkey_enable = 0;
