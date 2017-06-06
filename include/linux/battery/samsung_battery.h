@@ -508,9 +508,9 @@ struct samsung_battery_platform_data {
 	bool battery_standever;
 };
 
-<<<<<<< HEAD
+
 extern bool is_cable_attached;
-=======
+
 #ifdef CONFIG_BATTERY_MAX77693_CHARGER_CONTROL
 extern void charger_control_init(struct battery_info *info);
 struct max77693_dev;
@@ -523,6 +523,5 @@ enum {
 	CHRG_CTRL_FLAGS
 };
 #endif
->>>>>>> 314a328... battery: Add MAX77693/Midas charger control
 
 #endif /* __MACH_SAMSUNG_BATTERY_H */
