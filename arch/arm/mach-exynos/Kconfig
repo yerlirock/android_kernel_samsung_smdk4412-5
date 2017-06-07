@@ -1858,8 +1858,6 @@ config MACH_KONA_SENSOR
           BMA254 / BOSCH
           YAS532 / YAMAHA
           GP2A030A / SHARP
-<<<<<<< HEAD
-=======
 
 config ABB_CONTROL
 	bool "Adaptive body bias control"
@@ -1871,4 +1869,4 @@ config CHARGE_LEVEL
 	default y
 	help
 	  Allows configuration of ac, wireless and usb charging levels	  
->>>>>>> 3e2bf2f... samsung-battery: Squash Commit : Implement Charge Level Interface v2 (andip71)
+
