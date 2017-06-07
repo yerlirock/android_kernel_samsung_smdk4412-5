@@ -22,7 +22,11 @@
 #include <linux/battery/samsung_battery.h>
 
 #define MIN_SAFETY_CURR				100
-#define MAX_SAFETY_CURR				2500
+#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_M3)
+#define MAX_SAFETY_CURR				1500
+#else
+#define MAX_SAFETY_CURR				2200
+#endif
 
 #define MIN_SOFT_VOLT				3600000
 #define MAX_SOFT_VOLT				4500000

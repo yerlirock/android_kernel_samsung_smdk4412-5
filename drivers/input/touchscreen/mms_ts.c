@@ -50,6 +50,8 @@
 
 #include <asm/unaligned.h>
 
+#include "touchboost_switch.h"
+
 #ifdef CONFIG_TOUCH_WAKE
 #include <linux/touch_wake.h>
 #endif
