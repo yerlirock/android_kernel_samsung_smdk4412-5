@@ -151,12 +151,10 @@ static struct timer_list bln_notification_timeout_timer;
 static void bln_notification_off_process(struct work_struct *bln_notification_off_work);
 static DECLARE_WORK(bln_notification_off_work, bln_notification_off_process);
 
-<<<<<<< HEAD
 bool bln_enabled = false;
 bool bln_ongoing = false;
 bool bln_blink_enabled = false;
 bool bln_suspended = false;
-=======
 static bool bln_enabled = false;
 static bool bln_ongoing = false;
 static bool bln_blink_enabled = false;
@@ -165,13 +163,11 @@ static bool bln_use_wakelock = false;
 static struct wake_lock bln_wake_lock;
 
 static DEFINE_MUTEX(led_notification_mutex);
->>>>>>> d4b307f... cypress: BLN: Use wakelock for breathing when timeout is set
 static void enable_led_notification(void);
 static void disable_led_notification(void);
 
-<<<<<<< HEAD
 static DEFINE_MUTEX(led_notification_mutex);
-=======
+
 #ifdef LED_LDO_WITH_REGULATOR
 static struct timer_list bln_breathing_timer;
 static void bln_breathe_process(struct work_struct *bln_breathe_work);
@@ -192,7 +188,6 @@ struct bln_breathing_step bln_breathing_steps[MAX_BLN_BREATHING_STEPS];
 static int bln_breathing_idx = 0;
 static int bln_breathing_step_idx = 0;
 #endif
->>>>>>> 98a78b4... cypress: BLN: Add breathing notification support
 
 #endif
 
@@ -1991,9 +1986,9 @@ static void disable_touchkey_backlights(void) {
 static void enable_led_notification(void) {
 	mutex_lock(&led_notification_mutex);
 	if (touchkey_enable != 1) {
-<<<<<<< HEAD
+
 		touchkey_activate();
-=======
+
 		if (bln_suspended) {
 			touchkey_activate();
 		}
@@ -2015,9 +2010,7 @@ static void enable_led_notification(void) {
 			/* restart the timer */
 			mod_timer(&bln_notification_timeout_timer, jiffies + msecs_to_jiffies(1000));
 		}
-<<<<<<< HEAD
->>>>>>> e42c98b... cypress: BLN: Add notification timeout support
-=======
+
 #ifdef LED_LDO_WITH_REGULATOR
 		if (bln_breathing){
 			if (!wake_lock_active(&bln_wake_lock) && bln_use_wakelock) {
@@ -2027,7 +2020,7 @@ static void enable_led_notification(void) {
 			mod_timer(&bln_breathing_timer, jiffies + 4);
 		}
 #endif
->>>>>>> 98a78b4... cypress: BLN: Add breathing notification support
+
 	}
 	enable_touchkey_backlights();
 	mutex_unlock(&led_notification_mutex);
