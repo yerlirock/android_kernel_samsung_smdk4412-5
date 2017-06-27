@@ -151,10 +151,6 @@ static struct timer_list bln_notification_timeout_timer;
 static void bln_notification_off_process(struct work_struct *bln_notification_off_work);
 static DECLARE_WORK(bln_notification_off_work, bln_notification_off_process);
 
-bool bln_enabled = false;
-bool bln_ongoing = false;
-bool bln_blink_enabled = false;
-bool bln_suspended = false;
 static bool bln_enabled = false;
 static bool bln_ongoing = false;
 static bool bln_blink_enabled = false;
@@ -165,8 +161,6 @@ static struct wake_lock bln_wake_lock;
 static DEFINE_MUTEX(led_notification_mutex);
 static void enable_led_notification(void);
 static void disable_led_notification(void);
-
-static DEFINE_MUTEX(led_notification_mutex);
 
 #ifdef LED_LDO_WITH_REGULATOR
 static struct timer_list bln_breathing_timer;
@@ -225,6 +219,29 @@ static void change_touch_key_led_voltage(int vol_mv)
 	}
 	regulator_set_voltage(tled_regulator, vol_mv * 1000, vol_mv * 1000);
 	regulator_put(tled_regulator);
+}
+
+struct regulator {
+        struct device *dev;
+        struct list_head list;
+        int uA_load;
+        int min_uV;
+        int max_uV;
+        char *supply_name;
+        struct device_attribute dev_attr;
+        struct regulator_dev *rdev;
+};
+
+void set_touch_constraints(bool blnstatus)
+{
+	struct regulator *r;
+
+	r = regulator_get(NULL, "touch_led");
+	r->rdev->constraints->state_mem.enabled = blnstatus;
+	r->rdev->constraints->state_mem.disabled = !blnstatus;
+	r = regulator_get(NULL, "touch");
+	r->rdev->constraints->state_mem.enabled = blnstatus;
+	r->rdev->constraints->state_mem.disabled = !blnstatus;
 }
 
 void update_touchkey_brightness(unsigned int level, bool set_voltage)
@@ -1160,12 +1177,12 @@ static int sec_touchkey_early_suspend(struct early_suspend *h)
 	tkey_i2c->pdata->power_on(0);
 
 #ifdef CONFIG_TOUCHKEY_BLN
+	bln_suspended = true;
 	if (bln_enabled && bln_ongoing) {
 		printk(KERN_DEBUG "[TouchKey-BLN] %s: Resume BLN\n",
 			__func__);
 		enable_led_notification();
 	}
-	bln_suspended = true;
 #endif
 	return 0;
 }
@@ -1395,10 +1412,8 @@ static ssize_t touchkey_led_control(struct device *dev,
 	printk(KERN_DEBUG "[TouchKey] %s: %d\n", __func__, data);
 #ifdef CONFIG_TOUCHKEY_BLN
 	if (bln_enabled && bln_ongoing) {
-		if (data > 0) {
-			touchled_cmd_reversed = 1;
-			touchkey_led_status = TK_CMD_LED_ON;
-		}
+		touchled_cmd_reversed = data > 0;
+		touchkey_led_status = data > 0 ? TK_CMD_LED_ON : TK_CMD_LED_OFF;
 		return size;
 	}
 #endif
@@ -1985,10 +2000,8 @@ static void disable_touchkey_backlights(void) {
 
 static void enable_led_notification(void) {
 	mutex_lock(&led_notification_mutex);
+	printk(KERN_DEBUG "[TouchKey-BLN] %s\n", __func__);
 	if (touchkey_enable != 1) {
-
-		touchkey_activate();
-
 		if (bln_suspended) {
 			touchkey_activate();
 		}
@@ -2010,7 +2023,6 @@ static void enable_led_notification(void) {
 			/* restart the timer */
 			mod_timer(&bln_notification_timeout_timer, jiffies + msecs_to_jiffies(1000));
 		}
-
 #ifdef LED_LDO_WITH_REGULATOR
 		if (bln_breathing){
 			if (!wake_lock_active(&bln_wake_lock) && bln_use_wakelock) {
@@ -2020,14 +2032,14 @@ static void enable_led_notification(void) {
 			mod_timer(&bln_breathing_timer, jiffies + 4);
 		}
 #endif
-
 	}
-	enable_touchkey_backlights();
 	mutex_unlock(&led_notification_mutex);
 }
 
 static void disable_led_notification(void) {
 	mutex_lock(&led_notification_mutex);
+	set_touch_constraints(false);
+	printk(KERN_DEBUG "[TouchKey-BLN] %s\n", __func__);
 	bln_blink_enabled = false;
 
 	if (touchkey_enable == 1) {
