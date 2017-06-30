@@ -236,7 +236,6 @@ static void mdm_silent_reset(void)
 			msecs_to_jiffies(MDM_BOOT_TIMEOUT))) {
 		mdm_drv->mdm_boot_status = -ETIMEDOUT;
 		pr_info("%s: mdm modem restart timed out.\n", __func__);
-		panic("%s[%p]: Failed to powerup!", __func__, current);
 	} else {
 		pr_info("%s: mdm modem has been restarted\n", __func__);
 
