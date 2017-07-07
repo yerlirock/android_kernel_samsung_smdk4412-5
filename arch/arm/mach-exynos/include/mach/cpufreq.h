@@ -14,7 +14,6 @@
  * This should be same with cpufreq_frequency_table
 */
 
-
 #define CPU_UV_MV_MAX 1500000
 #define CPU_UV_MV_MIN 600000
 
@@ -23,7 +22,7 @@ enum cpufreq_level_index {
 	L5, L6, L7, L8, L9,
 	L10, L11, L12, L13, L14,
 	L15, L16, L17, L18, L19,
-	L20,
+	L20, L21, L22
 };
 
 enum busfreq_level_request {
@@ -43,6 +42,7 @@ enum cpufreq_lock_ID {
 	DVFS_LOCK_ID_MFC,	/* MFC */
 	DVFS_LOCK_ID_USB,	/* USB */
 	DVFS_LOCK_ID_USB_IF,	/* USB_IF */
+	DVFS_LOCK_ID_DPRAM_IF,	/* DPRAM_IF */
 	DVFS_LOCK_ID_CAM,	/* CAM */
 	DVFS_LOCK_ID_PM,	/* PM */
 	DVFS_LOCK_ID_USER,	/* USER */
@@ -67,11 +67,13 @@ enum cpufreq_lock_ID {
 	 * implementation in CPUFREQ framework of QoS.
 	 */
 	DVFS_LOCK_ID_QOS_DMA_LATENCY,
+	DVFS_LOCK_ID_INCALL,
 	DVFS_LOCK_ID_END,
 };
 
 int exynos_cpufreq_get_level(unsigned int freq,
 			unsigned int *level);
+int exynos_cpufreq_get_level_ret(unsigned int freq);
 int exynos_find_cpufreq_level_by_volt(unsigned int arm_volt,
 			unsigned int *level);
 int exynos_cpufreq_lock(unsigned int nId,
