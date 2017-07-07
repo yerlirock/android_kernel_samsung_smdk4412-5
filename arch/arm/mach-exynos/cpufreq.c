@@ -34,7 +34,9 @@
 #include <plat/cpu.h>
 
 #if defined(CONFIG_MACH_PX) || defined(CONFIG_MACH_Q1_BD) ||\
-	defined(CONFIG_MACH_P4NOTE) || defined(CONFIG_MACH_GC1)
+	defined(CONFIG_MACH_P4NOTE) || defined(CONFIG_MACH_SP7160LTE) ||\
+	defined(CONFIG_MACH_GC1) || defined(CONFIG_MACH_TAB3) ||\
+	defined(CONFIG_MACH_GC2PD)
 #include <mach/sec_debug.h>
 #endif
 
@@ -44,7 +46,7 @@ static struct regulator *arm_regulator;
 static struct cpufreq_freqs freqs;
 
 static bool exynos_cpufreq_disable;
-static bool exynos_cpufreq_lock_disable;
+bool exynos_cpufreq_lock_disable;
 static bool exynos_cpufreq_init_done;
 static DEFINE_MUTEX(set_freq_lock);
 static DEFINE_MUTEX(set_cpu_freq_lock);
@@ -207,7 +209,9 @@ int exynos_find_cpufreq_level_by_volt(unsigned int arm_volt,
 	/* find cpufreq level in volt_table */
 	for (i = exynos_info->min_support_idx;
 			i >= exynos_info->max_support_idx; i--) {
+		pr_info("exynos_find_cpufreq_level_by_volt: searching volt_table[%d](%d) >= %d", i, volt_table[i], arm_volt);
 		if (volt_table[i] >= arm_volt) {
+			pr_info("exynos_find_cpufreq_level_by_volt: found volt_table[%d](%d) >= %d", i, volt_table[i], arm_volt);
 			*level = (unsigned int)i;
 			return 0;
 		}
@@ -246,6 +250,33 @@ int exynos_cpufreq_get_level(unsigned int freq, unsigned int *level)
 	return -EINVAL;
 }
 EXPORT_SYMBOL_GPL(exynos_cpufreq_get_level);
+
+int exynos_cpufreq_get_level_ret(unsigned int freq)
+{
+	struct cpufreq_frequency_table *table;
+	unsigned int i;
+
+	if (!exynos_cpufreq_init_done)
+		return -EINVAL;
+
+	table = cpufreq_frequency_get_table(0);
+	if (!table) {
+		pr_err("%s: Failed to get the cpufreq table\n", __func__);
+		return -EINVAL;
+	}
+
+	for (i = exynos_info->max_support_idx;
+		(table[i].frequency != CPUFREQ_TABLE_END); i++) {
+		if (table[i].frequency == freq) {
+			return i;
+		}
+	}
+
+	pr_err("%s: %u KHz is an unsupported cpufreq\n", __func__, freq);
+
+	return -EINVAL;
+}
+EXPORT_SYMBOL_GPL(exynos_cpufreq_get_level_ret);
 
 atomic_t exynos_cpufreq_lock_count;
 
@@ -631,6 +662,13 @@ static int exynos_cpufreq_notifier_event(struct notifier_block *this,
 						exynos_info->pm_lock_idx);
 		if (ret < 0)
 			return NOTIFY_BAD;
+#elif defined(CONFIG_ARCH_EXYNOS4)
+		if (soc_is_exynos4212()) {
+			ret = exynos_cpufreq_upper_limit(DVFS_LOCK_ID_PM,
+					exynos_info->pm_lock_idx);
+			if (ret < 0)
+				return NOTIFY_BAD;
+		}
 #endif
 		exynos_cpufreq_disable = true;
 
@@ -654,6 +692,9 @@ static int exynos_cpufreq_notifier_event(struct notifier_block *this,
 		exynos_cpufreq_lock_free(DVFS_LOCK_ID_PM);
 #if defined(CONFIG_CPU_EXYNOS4210) || defined(CONFIG_SLP)
 		exynos_cpufreq_upper_limit_free(DVFS_LOCK_ID_PM);
+#elif defined(CONFIG_ARCH_EXYNOS4)
+		if (soc_is_exynos4212())
+			exynos_cpufreq_upper_limit_free(DVFS_LOCK_ID_PM);
 #endif
 		exynos_cpufreq_disable = false;
 		/* If current governor is userspace or performance or powersave,
@@ -704,7 +745,6 @@ static struct notifier_block exynos_cpufreq_policy_notifier = {
 
 static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
-	int ret;
 	int retval;
 
 	policy->cur = policy->min = policy->max = exynos_getspeed(policy->cpu);
@@ -727,32 +767,19 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		cpumask_setall(policy->cpus);
 	}
 
-	ret = cpufreq_frequency_table_cpuinfo(policy, exynos_info->freq_table);
-	if (ret)
-		return ret;
-
-	cpufreq_frequency_table_get_attr(exynos_info->freq_table, policy->cpu);
-
-	return 0;
 	retval = cpufreq_frequency_table_cpuinfo(policy, exynos_info->freq_table);
 
 	/* Keep stock frq. as default startup frq. */
+#ifdef CONFIG_MACH_M0
+	policy->max = 1400000;
+#endif
+#ifdef CONFIG_MACH_T0
 	policy->max = 1600000;
+#endif
 	policy->min = 200000;
 
 	return retval;
 }
-
-static int exynos_cpufreq_cpu_exit(struct cpufreq_policy *policy)
-{
-	cpufreq_frequency_table_put_attr(policy->cpu);
-	return 0;
-}
-
-static struct freq_attr *exynos_cpufreq_attr[] = {
-	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL,
-};
 
 static int exynos_cpufreq_reboot_notifier_call(struct notifier_block *this,
 				   unsigned long code, void *_cmd)
@@ -777,9 +804,7 @@ static struct cpufreq_driver exynos_driver = {
 	.target		= exynos_target,
 	.get		= exynos_getspeed,
 	.init		= exynos_cpufreq_cpu_init,
-	.exit		= exynos_cpufreq_cpu_exit,
 	.name		= "exynos_cpufreq",
-	.attr		= exynos_cpufreq_attr,
 #ifdef CONFIG_PM
 	.suspend	= exynos_cpufreq_suspend,
 	.resume		= exynos_cpufreq_resume,
